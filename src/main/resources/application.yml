@@ -1,0 +1,35 @@
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://192.168.88.133:27017/1810cc
+  redis:
+    host: 192.168.1.155
+    port: 6379
+    password: 123
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://47.94.162.137 :3306/wuzu?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    ##aop
+  aop:
+    auto: true
+  ##\u6D88\u8D39\u8005
+  application:
+    name: servername
+  dubbo:
+    application:
+      name: tree_consumer
+    registry:
+      address: zookeeper://127.0.0.1:2181
+    scan: com.jk.service
+
+mybatis:
+  mapperLocations: classpath*:mybatis/mapper-*.xml
+  typeAliasesPackage: com.jk.bean
+
+
+server:
+  port: 8082
