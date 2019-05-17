@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <script src="/layui/jquery-3.3.1.js"></script>
+    <script src="/layui/layui.all.js"></script>
+    <script src="/layui/layui.js"></script>
+</head>
+
+<body>
+<div  class="demo">
+
+<i class="layui-icon layui-icon-spread-left" style="font-size: 30px; color: black;"></i>
+<font size="5">已发布线路</font><span id="lineCount"></span> &nbsp;&nbsp;
+<button class="layui-btn layui-btn-sm">
+    <i class="layui-icon">&#xe608;</i>添加
+</button>
+</div>
+<fieldset class="layui-elem-field">
+    <legend>筛选条件</legend>
+    <form class="layui-form" action="">
+    <div class="layui-field-box">
+        <div class="layui-form-item">
+            <label class="layui-form-label">始发地：</label>
+            <div class="layui-input-inline" style="width: 100px">
+                <select name="quiz1">
+                    <option value="">请选择省</option>
+                    <option value="浙江" selected="">省</option>
+                    <option value="你的工号">江西省</option>
+                    <option value="你最喜欢的老师">福建省</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 100px">
+                <select name="quiz2">
+                    <option value="">市</option>
+                    <option value="杭州">杭州</option>
+                    <option value="宁波" disabled="">市</option>
+                    <option value="温州">温州</option>
+                    <option value="温州">台州</option>
+                    <option value="温州">绍兴</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 100px">
+                <select name="quiz3">
+                    <option value="" selected>区</option>
+                    <option value="西湖区">西湖区</option>
+                    <option value="余杭区">余杭区</option>
+                    <option value="拱墅区">临安市</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">目的地：</label>
+            <div class="layui-input-inline" style="width: 100px">
+                <select name="quiz1">
+                    <option value="">请选择省</option>
+                    <option value="浙江" selected="">省</option>
+                    <option value="你的工号">江西省</option>
+
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 100px">
+                <select name="quiz2">
+                    <option value="">市</option>
+                    <option value="杭州">杭州</option>
+                    <option value="温州">温州</option>
+                    <option value="温州">台州</option>
+                    <option value="温州">绍兴</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 100px">
+                <select name="quiz3">
+                    <option value="">区</option>
+                    <option value="西湖区">西湖区</option>
+                    <option value="余杭区">余杭区</option>
+                    <option value="拱墅区">临安市</option>
+                </select>
+            </div>
+        </div>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="layui-btn">
+            <i class="layui-icon layui-icon-water"></i> 筛选
+        </button>
+
+        <button class="layui-btn">
+            <i class="layui-icon layui-icon-refresh"></i> 重置
+        </button>
+
+        <button class="layui-btn">
+            <i class="layui-icon layui-icon-return"></i> 导出
+        </button>
+
+        <label class="layui-form-label">共有<span id="resultCount"></span>条结果</label>
+    </div>
+    </form>
+</fieldset><br>
+
+<fieldset class="layui-elem-field">
+    <legend>搜索结果</legend>
+    <table class="layui-hide" id="test"></table>
+</fieldset>
+
+
+
+</body>
+<script type="text/javascript" >
+    layui.use('form',function () {
+        var form = layui.form;
+        form.render();
+    });
+
+    layui.use('table', function(){
+        var table = layui.table;
+        table.render({
+            elem: '#test'
+            ,url:'lineSearch'
+            ,cellMinWidth: 100//全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,cols: [ [
+                 {type:'numbers'}
+                ,{type: 'checkbox'},
+                 {field:'id',  title: '序号', sort: true}
+                ,{field:'startplace',  title: '始发地'}
+                ,{field:'endplace',  title: '目的地', sort: true}
+                ,{field:'transtime',  title: '运输时效'}
+                ,{field:'haveyPrice', title: '重货价格'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                ,{field:'lightPrice', title: '轻货价格', sort: true}
+                ,{field:'basicPrice', title: '最低一票价格', sort: true}
+                ,{field:'classify', title: '上门提货'}
+                ,{field:'tiGoods', title: '送货上门', sort: true}
+                ,{field:'submitstate',  title: '发布状态', sort: true}
+                ,{field:'xxxx',  title: '操作', sort: true ,align:'center', toolbar: '#barDemo'}
+            ] ]
+            ,page: true
+        });
+    });
+
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+</html>
