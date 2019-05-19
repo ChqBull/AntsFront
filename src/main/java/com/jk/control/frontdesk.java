@@ -42,9 +42,9 @@ public class frontdesk {
 
     @RequestMapping("lineSearch")
     @ResponseBody
-    public HashMap<String,Object> lineSearch(Integer page,Integer limit){
+    public HashMap<String,Object> lineSearch(Integer page,Integer limit,OrderBean orderBean){
 
-        return frontdeskService.lineSearch(page,limit);
+        return frontdeskService.lineSearch(page,limit,orderBean);
 
 
     }
@@ -70,15 +70,27 @@ public class frontdesk {
 
     public String editLine(Model model,Integer id){
         OrderBean orderBean = frontdeskService.editLine(id);
-       model.addAttribute("order",orderBean);
+        String cargoWeight = orderBean.getCargoWeight();
+        model.addAttribute("order",orderBean);
         return "editLine";
     }
     @RequestMapping("listData")
     @ResponseBody
     public List listData (){
         List list = frontdeskService.listData();
-
         return  list;
+    }
+    @RequestMapping("add")
+    @ResponseBody
+    public String add(OrderBean orderBean){
+        frontdeskService.add(orderBean);
+        return "linemanager";
+    }
+    @RequestMapping("deleteData")
+    public String deleteData(int id){
+        frontdeskService.deleteData(id);
+        return "linemanager";
+
     }
 
 }

@@ -1,9 +1,6 @@
 package com.jk.service.impl;
 
-import com.jk.bean.Areas;
-import com.jk.bean.Cities;
-import com.jk.bean.OrderBean;
-import com.jk.bean.Provinces;
+import com.jk.bean.*;
 import com.jk.mapper.FrontdeskMapper;
 import com.jk.service.FrontdeskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +16,33 @@ public class FrontdeskServiceImpl implements FrontdeskService {
 
 
     @Override
-    public HashMap<String, Object> lineSearch(Integer page, Integer limit) {
+    public HashMap<String, Object> lineSearch(Integer page, Integer limit,OrderBean orderBea) {
         Integer count =frontdeskMapper.count();
-        List<OrderBean> orderBeans = frontdeskMapper.list(page,limit);
+        List<OrderBean> orderBeans = frontdeskMapper.list(page,limit,orderBea);
+        String start ="";
+        String startplace="";
+        String end ="";
+        String endplace="";
+        for (OrderBean orderBean : orderBeans) {
+            start = orderBean.getStartplace();
+            if (start!=null) {
+                AreaData areaName = frontdeskMapper.searchArea(start);
+                String area = areaName.getArea();
+                String city = areaName.getCity();
+                String province = areaName.getProvince();
+                startplace = province + city + area;
+                orderBean.setStartplace(startplace);
+            }
+            end = orderBean.getEndplace();
+            if (end!=null) {
+                AreaData areaName = frontdeskMapper.searchArea2(end);
+                String area = areaName.getArea();
+                String city = areaName.getCity();
+                String province = areaName.getProvince();
+                endplace = province + city + area;
+                orderBean.setEndplace(endplace);
+            }
+        }
         HashMap<String,Object> map= new HashMap<>();
         map.put("count",count);
         map.put("data",orderBeans);
@@ -57,5 +78,15 @@ public class FrontdeskServiceImpl implements FrontdeskService {
     public List listData() {
         List list =  frontdeskMapper.listData();
         return list;
+    }
+
+    @Override
+    public void add(OrderBean orderBean) {
+        frontdeskMapper.add(orderBean);
+    }
+
+    @Override
+    public void deleteData(int id) {
+        frontdeskMapper.deleteData(id);
     }
 }

@@ -8,7 +8,14 @@
     <script src="/layui/layui.all.js"></script>
     <script src="/layui/layui.js"></script>
 </head>
-
+<style>
+    .layui-table-cell {
+        height: auto;
+        overflow: visible;
+        text-overflow: inherit;
+        white-space: normal;
+    }
+</style>
 <body>
 <div  class="demo">
 
@@ -20,22 +27,23 @@
 </div>
 <fieldset class="layui-elem-field">
     <legend>筛选条件</legend>
+    <div class="demoTable">
     <form class="layui-form" action="">
     <div class="layui-field-box">
         <div class="layui-form-item">
             <label class="layui-form-label">始发地：</label>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz1" lay-filter="sheng" id="sheng">
+                <select name="shengId" lay-filter="sheng" id="sheng">
                     <option value="">请选择省</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz2" lay-filter="shi" id="shi">
+                <select  name="shiId" lay-filter="shi" id="shi">
                     <option value="">市</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz3" lay-filter="xian" id="xian">
+                <select  name="startplace" lay-filter="xian" id="xian">
                     <option value="" selected>区</option>
 
                 </select>
@@ -46,23 +54,23 @@
         <div class="layui-form-item">
             <label class="layui-form-label">目的地：</label>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz1" lay-filter="province" id="province">
+                <select name="shengId1" lay-filter="province" id="province">
                     <option value="">请选择省</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz2" lay-filter="city" id="city">
+                <select name="shiId2" lay-filter="city" id="city">
                     <option value="">市</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz3" lay-filter="area" id="area">
+                <select name="endplace" lay-filter="area" id="area">
                     <option value="">区</option>
                 </select>
             </div>
         </div>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="layui-btn">
+        <button class="layui-btn" data-type="reload">
             <i class="layui-icon layui-icon-water"></i> 筛选
         </button>
 
@@ -77,6 +85,7 @@
         <label class="layui-form-label">共有<span id="resultCount"></span>条结果</label>
     </div>
     </form>
+    </div>
 </fieldset><br>
 
 <fieldset class="layui-elem-field">
@@ -100,6 +109,8 @@ $(function(){
 
     layui.use('table', function(){
         var table = layui.table;
+
+
         table.render({
             elem: '#test'
             ,url:'lineSearch'
@@ -107,14 +118,17 @@ $(function(){
             ,cols: [ [
                  {type:'numbers'}
                 ,{type: 'checkbox'},
-                 {field:'id',  title: '序号', sort: true}
+                 {field:'id',  title: '序号', width:100,sort: true}
                 ,{field:'startplace',  title: '始发地'}
                 ,{field:'endplace',  title: '目的地', sort: true}
                 ,{field:'transtime',  title: '运输时效'}
                 ,{field:'haveyPrice', title: '重货价格',
                     templet: function(d){
                     if(d.cargoWeight>=100){
-                        return 1.2
+                        return "1.1"
+
+                    }else{
+                        return "1.2"
 
                     }
                 }
@@ -122,14 +136,64 @@ $(function(){
                 ,{field:'lightPrice', title: '轻货价格', sort: true}
                 ,{field:'basicPrice', title: '最低一票价格', sort: true}
                 ,{field:'cargoWeight', title: '货物重量', sort: true}
-                ,{field:'classify', title: '上门提货'}
-                ,{field:'tiGoods', title: '送货上门', sort: true}
-                ,{field:'submitstate',  title: '发布状态', sort: true}
+                ,{field:'tiGoods', title: '上门提货',
+                    templet: function(d){
+                        if(d.tiGoods==1){
+                            return '<i class="layui-icon layui-icon-ok" style="font-size: 10px;"></i>支持'
+
+                        }else{
+                            return '<i class="layui-icon layui-icon-close" style="font-size: 10px;"></i>不支持'
+
+                        }
+                    }}
+                ,{field:'shGoods', title: '送货上门', sort: true,
+                    templet: function(d){
+                        if(d.shGoods==1){
+                            return '<i class=\"layui-icon layui-icon-ok\" style=\"font-size: 10px; color: #1E9FFF;\"></i>支持'
+
+                        }else{
+                            return '<i class=\"layui-icon layui-icon-close\" style=\"font-size: 10px; color: #1E9FFF;\"></i>不支持'
+
+                        }
+                    }}
+                ,{field:'submitstate',  title: '发布状态', sort: true,
+                    templet: function(d){
+                        if(d.submitstate==1){
+                            return '<i class=\"layui-icon layui-icon-ok\" style=\"font-size: 10px; color: #1E9FFF;\"></i>已发布'
+
+                        }else{
+                            return '<i class=\"layui-icon layui-icon-close\" style=\"font-size: 10px; color: #1E9FFF;\"></i>未发布'
+
+                        }
+                    }}
                 ,{field:'xxxx',  title: '操作', sort: true ,align:'center', toolbar: '#barDemo'}
             ] ]
             ,page: true,
 
         });
+        var $ = layui.$, active = {
+            reload: function(){
+                //执行重载
+                table.reload('testReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                         diqu:$("#seleDiqu").val()
+                        ,pid:$("#sheng").val()
+                        ,cid:$("#shi").val()
+                        ,aid:$("#xian").val()
+
+                    }
+                });
+            }
+        };
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
     });
 //三级联动
     layui.use('form',function () {

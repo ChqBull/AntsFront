@@ -5,7 +5,10 @@
 
 <mapper namespace="com.jk.mapper.FrontdeskMapper">
 <select id="list" resultType="com.jk.bean.OrderBean">
-    select * from lineTable
+    select * from lineTable where 1=1
+    <!--<if test="shengId!=null and shiId != null and startplace != null">
+        and startplace = #{startplace}
+    </if>-->
 </select>
 <select id="count" resultType="Integer">
     select count(id) from lineTable
@@ -28,9 +31,40 @@
 <select id="listData" resultType="com.jk.bean.OrderBean">
     select *  from lineTable
 </select>
+<update id="add" parameterType="com.jk.bean.OrderBean">
+   update lineTable
+   <set>
+    <if test="basicPrice != null and basicPrice!='' ">
+        basicprice = #{basicPrice},
+    </if>
+    <if test="transtime != null and transtime!='' ">
+        transtime = #{transtime},
+    </if>
+    <if test="shengId!=null and shiId!=null and startplace != null and startplace!='' ">
+        startplace = #{startplace},
+    </if>
+    <if test="shengId2!=null and shiId2!=null and endplace != null and endplace!='' ">
+        endplace = #{endplace},
+    </if>
+    <if test="tiGoods != null and tiGoods!='' ">
+        tiGoods = #{tiGoods},
+    </if>
+    <if test="shGoods != null and shGoods!='' ">
+           shGoods = #{shGoods}
+    </if>
+   </set>
+   where id = #{id}
+</update>
+<select id="searchArea" resultType="com.jk.bean.AreaData">
+    SELECT p.province,c.city,a.area from provinces p,cities c,areas a where p.provinceid=c.provinceid and c.cityid = a.cityid and a.areaid= #{0}
+</select>
 
-
-
+<select id="searchArea2" resultType="com.jk.bean.AreaData">
+    SELECT p.province,c.city,a.area from provinces p,cities c,areas a where p.provinceid=c.provinceid and c.cityid = a.cityid and a.areaid= #{0}
+</select>
+<delete id="deleteData" parameterType="com.jk.bean.OrderBean">
+    delete from lineTable where id = #{0}
+</delete>
 
 
 </mapper>

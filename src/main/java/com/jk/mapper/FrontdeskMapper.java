@@ -1,16 +1,13 @@
 package com.jk.mapper;
 
-import com.jk.bean.Areas;
-import com.jk.bean.Cities;
-import com.jk.bean.OrderBean;
-import com.jk.bean.Provinces;
+import com.jk.bean.*;
 
 import java.util.List;
 
 public interface FrontdeskMapper {
     Integer count();
 
-    List<OrderBean> list(Integer page, Integer limit);
+    List<OrderBean> list(Integer page, Integer limit,OrderBean orderBean);
 
     List<Provinces> findProvinces();
 
@@ -21,4 +18,12 @@ public interface FrontdeskMapper {
     OrderBean editLine(Integer id);
 
     List listData();
+
+    void add(OrderBean orderBean);
+
+    AreaData searchArea(String startplace);
+
+    AreaData searchArea2(String end);
+
+    void deleteData(int id);
 }

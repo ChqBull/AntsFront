@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface FrontdeskService {
-    HashMap<String,Object> lineSearch(Integer page, Integer limit);
+    HashMap<String,Object> lineSearch(Integer page, Integer limit,OrderBean orderBean);
 
     List<Provinces> findProvinces();
 
@@ -20,4 +20,8 @@ public interface FrontdeskService {
     OrderBean editLine(Integer id);
 
     List listData();
+
+    void add(OrderBean orderBean);
+
+    void deleteData(int id);
 }
