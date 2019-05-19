@@ -14,7 +14,7 @@
 
 <i class="layui-icon layui-icon-spread-left" style="font-size: 30px; color: black;"></i>
 <font size="5">已发布线路</font><span id="lineCount"></span> &nbsp;&nbsp;
-<button class="layui-btn layui-btn-sm">
+<button type="button" class="layui-btn layui-btn-sm" onclick="listData()">
     <i class="layui-icon">&#xe608;</i>添加
 </button>
 </div>
@@ -25,29 +25,19 @@
         <div class="layui-form-item">
             <label class="layui-form-label">始发地：</label>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz1">
+                <select name="quiz1" lay-filter="sheng" id="sheng">
                     <option value="">请选择省</option>
-                    <option value="浙江" selected="">省</option>
-                    <option value="你的工号">江西省</option>
-                    <option value="你最喜欢的老师">福建省</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz2">
+                <select name="quiz2" lay-filter="shi" id="shi">
                     <option value="">市</option>
-                    <option value="杭州">杭州</option>
-                    <option value="宁波" disabled="">市</option>
-                    <option value="温州">温州</option>
-                    <option value="温州">台州</option>
-                    <option value="温州">绍兴</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz3">
+                <select name="quiz3" lay-filter="xian" id="xian">
                     <option value="" selected>区</option>
-                    <option value="西湖区">西湖区</option>
-                    <option value="余杭区">余杭区</option>
-                    <option value="拱墅区">临安市</option>
+
                 </select>
             </div>
         </div>
@@ -56,28 +46,18 @@
         <div class="layui-form-item">
             <label class="layui-form-label">目的地：</label>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz1">
+                <select name="quiz1" lay-filter="province" id="province">
                     <option value="">请选择省</option>
-                    <option value="浙江" selected="">省</option>
-                    <option value="你的工号">江西省</option>
-
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz2">
+                <select name="quiz2" lay-filter="city" id="city">
                     <option value="">市</option>
-                    <option value="杭州">杭州</option>
-                    <option value="温州">温州</option>
-                    <option value="温州">台州</option>
-                    <option value="温州">绍兴</option>
                 </select>
             </div>
             <div class="layui-input-inline" style="width: 100px">
-                <select name="quiz3">
+                <select name="quiz3" lay-filter="area" id="area">
                     <option value="">区</option>
-                    <option value="西湖区">西湖区</option>
-                    <option value="余杭区">余杭区</option>
-                    <option value="拱墅区">临安市</option>
                 </select>
             </div>
         </div>
@@ -101,17 +81,22 @@
 
 <fieldset class="layui-elem-field">
     <legend>搜索结果</legend>
-    <table class="layui-hide" id="test"></table>
+    <table class="layui-hide" id="test" lay-filter="test"></table>
 </fieldset>
 
 
 
 </body>
+<script type="text/html" id="barDemo">
+    <button type="button" class="layui-btn layui-btn-xs" onclick="editLine()" lay-event="del">
+        <i class="layui-icon layui-icon-water"></i>编辑
+    </button>
+</script>
 <script type="text/javascript" >
-    layui.use('form',function () {
-        var form = layui.form;
-        form.render();
-    });
+$(function(){
+    listData()
+})
+
 
     layui.use('table', function(){
         var table = layui.table;
@@ -126,20 +111,158 @@
                 ,{field:'startplace',  title: '始发地'}
                 ,{field:'endplace',  title: '目的地', sort: true}
                 ,{field:'transtime',  title: '运输时效'}
-                ,{field:'haveyPrice', title: '重货价格'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                ,{field:'haveyPrice', title: '重货价格',
+                    templet: function(d){
+                    if(d.cargoWeight>=100){
+                        return 1.2
+
+                    }
+                }
+                }
                 ,{field:'lightPrice', title: '轻货价格', sort: true}
                 ,{field:'basicPrice', title: '最低一票价格', sort: true}
+                ,{field:'cargoWeight', title: '货物重量', sort: true}
                 ,{field:'classify', title: '上门提货'}
                 ,{field:'tiGoods', title: '送货上门', sort: true}
                 ,{field:'submitstate',  title: '发布状态', sort: true}
                 ,{field:'xxxx',  title: '操作', sort: true ,align:'center', toolbar: '#barDemo'}
             ] ]
-            ,page: true
+            ,page: true,
+
         });
     });
+//三级联动
+    layui.use('form',function () {
+        var form = layui.form;
+        form.render();
+
+        $.post(
+            "findProvinces",
+            function (obj) {
+                for (var i = 0; i < obj.length; i++) {
+                    $("#sheng").append("<option value=" + obj[i].provinceid + ">" + obj[i].province + "</option>")
+                    $("#province").append("<option value=" + obj[i].provinceid + ">" + obj[i].province + "</option>")
+                }
+                form.render("select");
+            },
+            "json"
+        )
+
+        //追加发货地的市
+        form.on('select(sheng)', function (data) {
+            $("#shi").empty();//当省发生改变把以前市区的数据清空
+            $("#shi").append($("<option value='0'>请选择</option>"));//然后再追加一个请选择这样一个标签
+            $("#xian").empty();//一起把以前县的数据清空
+            $("#xian").append($("<option value='0'> 请选择</option>"));//然后再追加一个请选择这样一个标签
+            if (data.value != 0) {
+                $.post(
+                    "findCity",
+                    {provinceid: data.value},
+                    function (obj) {
+                        for (var i = 0; i < obj.length; i++) {
+                            $("#shi").append("<option value=" + obj[i].cityid + ">" + obj[i].city + "</option>")
+                        }
+                        form.render("select");
+                    },
+                    "json"
+                )
+            }
+        });
+
+        //追加发货地的县
+        form.on('select(shi)', function (data) {
+            $("#xian").empty();//当市区发生该变把以前县的数据清空
+            $("#xian").append($("<option value='0'> 请选择</option>"));
+            $.post(
+                "findArea",
+                {cityid: data.value},
+                function (obj) {
+                    for (var i = 0; i < obj.length; i++) {
+                        $("#xian").append("<option value=" + obj[i].areaid + ">" + obj[i].area + "</option>")
+                    }
+                    form.render("select");
+                },
+                "json"
+            )
+        })
+
+        //2
+        //追加发货地的市
+        form.on('select(province)', function (data) {
+            $("#city").empty();//当省发生改变把以前市区的数据清空
+            $("#city").append($("<option value='0'>请选择</option>"));//然后再追加一个请选择这样一个标签
+            $("#area").empty();//一起把以前县的数据清空
+            $("#area").append($("<option value='0'> 请选择</option>"));//然后再追加一个请选择这样一个标签
+            if (data.value != 0) {
+                $.post(
+                    "findCity",
+                    {provinceid: data.value},
+                    function (obj) {
+                        for (var i = 0; i < obj.length; i++) {
+                            $("#city").append("<option value=" + obj[i].cityid + ">" + obj[i].city + "</option>")
+                        }
+                        form.render("select");
+                    },
+                    "json"
+                )
+            }
+        });
+
+        //追加发货地的县
+        form.on('select(city)', function (data) {
+            $("#area").empty();//当市区发生该变把以前县的数据清空
+            $("#area").append($("<option value='0'> 请选择</option>"));
+            $.post(
+                "findArea",
+                {cityid: data.value},
+                function (obj) {
+                    for (var i = 0; i < obj.length; i++) {
+                        $("#area").append("<option value=" + obj[i].areaid + ">" + obj[i].area + "</option>")
+                    }
+                    form.render("select");
+                },
+                "json"
+            )
+        })
+    })
+
+        function editLine() {
+            layui.use('table', function () {
+                var table = layui.table;
+                table.on('tool(test)', function (obj) {
+                    var data = obj.data;
+                    var id = data.id;
+                    if (obj.event === 'del') {
+                        alert(id);
+                        location.href="editLine?id="+id
+
+                    }
+                })
+
+            })
+        }
+
+
+        function listData(){
+            $.ajax({
+                url:"listData",
+                type:"post",
+                success:function(data){
+                    var cargoWeight=0
+                    for (var i=0;i<data.length;i++){
+                        cargoWeight  = data[i].cargoWeight;
+                    }
+                    var length = data.length;
+                    $("#lineCount").html("<font size='5'>("+length+")</font>")
+                    $("#resultCount").html(length)
+                }
+            })
+
+        }
 
 </script>
-<script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-</script>
+
+
+
+
 </html>

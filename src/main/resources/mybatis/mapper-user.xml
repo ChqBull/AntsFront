@@ -14,6 +14,23 @@
     select *  from provinces
 </select>
 <select id="findCity" resultType="com.jk.bean.Cities">
-    select *  from provinces
+    select *  from cities where provinceid = #{0}
 </select>
+
+<select id="findArea" resultType="com.jk.bean.Areas">
+    select *  from areas where cityid = #{0}
+</select>
+
+<select id="editLine" resultType="com.jk.bean.OrderBean">
+    select *  from lineTable where id = #{0}
+</select>
+
+<select id="listData" resultType="com.jk.bean.OrderBean">
+    select *  from lineTable
+</select>
+
+
+
+
+
 </mapper>

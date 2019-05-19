@@ -3,12 +3,15 @@ package com.jk.control;
 
 import com.jk.bean.Areas;
 import com.jk.bean.Cities;
+import com.jk.bean.OrderBean;
 import com.jk.bean.Provinces;
 import com.jk.service.FrontdeskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +43,7 @@ public class frontdesk {
     @RequestMapping("lineSearch")
     @ResponseBody
     public HashMap<String,Object> lineSearch(Integer page,Integer limit){
+
         return frontdeskService.lineSearch(page,limit);
 
 
@@ -62,5 +66,19 @@ public class frontdesk {
         return frontdeskService.findArea(cityid);
     }
 
+    @RequestMapping("editLine")
+
+    public String editLine(Model model,Integer id){
+        OrderBean orderBean = frontdeskService.editLine(id);
+       model.addAttribute("order",orderBean);
+        return "editLine";
+    }
+    @RequestMapping("listData")
+    @ResponseBody
+    public List listData (){
+        List list = frontdeskService.listData();
+
+        return  list;
+    }
 
 }

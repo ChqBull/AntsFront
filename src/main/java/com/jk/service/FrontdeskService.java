@@ -2,6 +2,7 @@ package com.jk.service;
 
 import com.jk.bean.Areas;
 import com.jk.bean.Cities;
+import com.jk.bean.OrderBean;
 import com.jk.bean.Provinces;
 
 import java.util.HashMap;
@@ -15,4 +16,8 @@ public interface FrontdeskService {
     List<Cities> findCity(int provinceid);
 
     List<Areas> findArea(int cityid);
+
+    OrderBean editLine(Integer id);
+
+    List listData();
 }

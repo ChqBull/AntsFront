@@ -17,4 +17,8 @@ public interface FrontdeskMapper {
     List<Cities> findCity(int provinceid);
 
     List<Areas> findArea(int cityid);
+
+    OrderBean editLine(Integer id);
+
+    List listData();
 }
